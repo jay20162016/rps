@@ -15,9 +15,9 @@ def construct_filters(idx):
         for step in [1, 2, 3]:
             first = max(0, idx - step * lookback)
             filter = list(range(first, idx, step))
-            print('idx', idx, 'lookback', lookback, 'step', step, filter)
+            # print('idx', idx, 'lookback', lookback, 'step', step, filter)
             filterset.add(','.join([str(x) for x in filter]))
-    print('#filters', len(filterset))
+    # print('#filters', len(filterset))
     filterlist = list(filterset)
     filters = [x.split(',') for x in filterlist]
     return filters
@@ -36,7 +36,7 @@ def get_top_card_probability(cards, LIKELIMAP):
         if n == top_count:
             top_card = c
         total_cards += n
-    print('total_cards', total_cards, 'high card', top_card, top_count)
+    # print('total_cards', total_cards, 'high card', top_card, top_count)
     amap = LIKELIMAP[total_cards]
     top_count = max(amap['L'], min(amap['H'], top_count))
     top_probability = amap[top_count]
@@ -60,7 +60,7 @@ def compute_your_card(filters, ycards, LIKELIMAP):
         if prob < min_probability:
             top_card = card
             min_probability = prob
-    print(top_card, min_probability)
+    # print(top_card, min_probability)
     return top_card
 
 # ATTENTION: Remove the following before submission
