@@ -84,7 +84,7 @@ input must be "R", "P", "S" or ""
             self.compile_code()
 
         self.scope["input"] = input
-        exec(self._code, self.scope)
+        exec self._code in self.scope
         self.output = self.scope["output"]
         return self.output
 
@@ -266,7 +266,7 @@ class Contest:
         input1 = input2 = output1 = output2 = ""
         errors = False
         error_string = ""
-        for i in range(self.rounds):
+        for i in xrange(self.rounds):
             random.setstate(self.bot1_rng)
             try:
                 output1 = self.bot1.get_move(input1)
@@ -331,8 +331,8 @@ desc is an optional output string."""
     for name in names:
         bots.append(bot_obj(name))
     if desc is not None:
-        print("%s:" % (desc))
-    print("%d bots loaded" % len(bots))
+        print "%s:" % (desc),
+    print "%d bots loaded" % len(bots)
     return bots
 
 
@@ -343,13 +343,13 @@ pairing.  a bot will never play itself."""
     if not bots:
         raise Exception("Must specify bots")
     if not bots2:
-        for i in range(len(bots)):
+        for i in xrange(len(bots)):
             bot1 = bots[i]
-            for j in range(i+1, len(bots)):
+            for j in xrange(i+1, len(bots)):
                 bot2 = bots[j]
                 if bot1 == bot2:
                     continue
-                for k in range(matches):
+                for k in xrange(matches):
                     # TODO modify contest to allow for multiple matches?
                     yield Contest(bot1, bot2, rounds)
     else:
@@ -357,13 +357,9 @@ pairing.  a bot will never play itself."""
             for bot2 in bots2:
                 if bot1 == bot2:
                     continue
-                for i in range(matches):
+                for i in xrange(matches):
                     # TODO modify contest to specify multiple matches?
                     yield Contest(bot1, bot2, rounds)
-
-def cmp(a, b):
-    return (a > b) - (a < b)
-
 
 def report_results(bots, results):
     """Summarizes a list of ContestResults"""
@@ -379,8 +375,8 @@ def report_results(bots, results):
 
     for result in results:
         if result.errors:
-            print("errors in contest:", result)
-            print(result.error_string)
+            print "errors in contest:", result
+            print result.error_string
 
         matches_played[ result.bot1.name ] += 1
         matches_played[ result.bot2.name ] += 1
@@ -395,18 +391,17 @@ def report_results(bots, results):
         rounds_played[ result.bot1.name ] += result.played
         rounds_played[ result.bot2.name ] += result.played
 
-    # sort results for output - sort list by
-    win_ratio = dict(zip(botnames,
+    # sort results for output - sort list by 
+    win_ratio = dict(zip(botnames, 
         map(lambda x: float(matches_won[x]) / matches_played[x], botnames)))
-    print('win_ratio', win_ratio)
-    # botnames.sort(lambda x,y: cmp(win_ratio[y], win_ratio[x]))
+    botnames.sort(lambda x,y: cmp(win_ratio[y], win_ratio[x]))
 
-    # print
+    print
     for bot in botnames:
         # float casting is necessary below, because we can import division
         # from __future__; that causes some of the bots to misbehave who
         # are not expecting it.
-        print("%s: won %.1f%% of matches (%d of %d)\n" \
+        print "%s: won %.1f%% of matches (%d of %d)\n" \
               "    won %.1f%% of rounds (%d of %d)\n" \
               "    avg score %.1f, net score %.1f\n" % \
               (bot, float(matches_won[bot]) / matches_played[bot] * 100,
@@ -414,7 +409,7 @@ def report_results(bots, results):
                       float(rounds_won[bot]) / rounds_played[bot] * 100,
                       rounds_won[bot], rounds_played[bot],
                       float(scores[bot]) / matches_played[bot],
-                      scores[bot]))
+                      scores[bot])
 
 def runner(contest):
     """Contest wrapper, needed for multiprocessing implementation"""
@@ -445,7 +440,7 @@ contests must be iterable return Contest objects."""
     # use a multi process queue of some kind that is fed into by the
     # parent process
     # TODO process results real time through a callback or something?
-    print("Running matches in", threads, "threads")
+    print "Running matches in", threads, "threads"
     results = []
     if Pool is not None and threads != 1:
         pool = pool_start(threads)
@@ -467,7 +462,7 @@ def low_priority():
         os.nice(19)
 
 def usage(msg, exit=0):
-    """
+    print """
 Rock-Paper-Scissors Runner v%s (http://www.rpscontest.com/)
    rpsrunner.py [options] <POOL1> [POOL2]
    rpsrunner.py [options] bot1.py bot2.py bot3.py
@@ -504,7 +499,7 @@ you're not sure what the bot does, then you shouldn't run it.""" % \
     (VERSION, MATCHES, POOL_SIZE,
         Pool is not None and "AVAILABLE" or "UNAVAILABLE")
     if msg:
-        print("\n\n%s" % msg)
+        print "\n\n%s" % msg
     return exit
 
 
@@ -517,8 +512,8 @@ def main(prog_args):
     try:
         opts, args = getopt.getopt(prog_args, "ht:m:l",
                 ["help", "threads", "matches", "low"])
-    except: # getopt.GetoptError, e:
-        return usage('Exception!!!', exit=2)
+    except getopt.GetoptError, e:
+        return usage(str(e), exit=2)
 
     for o, a in opts:
         if o in ("-t", "--threads"):
@@ -551,7 +546,7 @@ def main(prog_args):
         return usage("Must only specify two bot pools.")
 
     if set_low_priority:
-        print("Setting low priority")
+        print "Setting low priority"
         low_priority()
 
     # load bot data
@@ -581,15 +576,14 @@ def main(prog_args):
         bots2 = load_bots(bots2_files, "Pool 2")
 
     # run contests
-    print("Playing %d matches per pairing." % matches)
-    print('bots1_files', bots1_files, 'bots2_files', bots2_files)
+    print "Playing %d matches per pairing." % matches
     start_time = time.time()
     contests = match_maker(bots1, bots2, matches=matches)
     results = run_contests(contests, threads)
     end_time = time.time()
 
-    print("%d matches run" % len(results))
-    print("total run time: %.2f seconds" % (end_time - start_time))
+    print "%d matches run" % len(results)
+    print "total run time: %.2f seconds" % (end_time - start_time)
     report_results(bots1+bots2, results)
 
     return 0
