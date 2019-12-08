@@ -11,8 +11,8 @@ def construct_filters(idx):
     filterset = set()
     # if idx <= 10:
     #     return filters
-    for lookback in [5, 10, 20]:
-        for step in [1, 2, 3]:
+    for lookback in [10, 20, 50]: # 10, 20, 50 is better than 5, 10, 20
+         for step in [1, 2, 3]:
             first = max(0, idx - step * lookback)
             filter = list(range(first, idx, step))
             # print('idx', idx, 'lookback', lookback, 'step', step, filter)
@@ -44,8 +44,29 @@ def get_top_card_probability(cards, LIKELIMAP):
     return top_card, top_probability
 
 
-def compute_my_card(your_card):
+def beat_card(your_card):
     return {'R': 'P', 'P': 'S', 'S': 'R'}[your_card]
+
+
+def lose_card(your_card):
+    return {'R': 'S', 'P': 'R', 'S': 'P'}[your_card]
+
+
+def compute_my_hand_out_probabilistically(your_card, probs = [45, 30, 25]):
+    # if i'm certain your card is R, then the best i use is P;
+    # however, very likely my recent dealings are P, so you might actually use S to defeat me;
+    # so i'll mostly hand out P but occasionally hand out R 
+    card1 = beat_card(your_card)
+    card2 = your_card
+    card3 = lose_card(your_card)
+    idx = random.randint(0, 100)
+    if idx < probs[0]:
+        return card1
+    elif idx < probs[0] + probs[1]:
+        return card2
+    else:
+        return card3
+
 
 def compute_your_card(filters, ycards, LIKELIMAP):
     # filters = construct_filters(100)
@@ -82,4 +103,4 @@ if index <= 100:
 else:
     filters = construct_filters(index)
     your_card = compute_your_card(filters, ycards, LIKELIMAP)
-    output = compute_my_card(your_card)
+    output = compute_my_hand_out_probabilistically(your_card)
