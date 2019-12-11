@@ -1,4 +1,4 @@
-name: Python application
+name: Run bots
 
 on:
   push:
@@ -21,4 +21,4 @@ jobs:
         python-version: 3.7
     - name: Run bots
       run: |
-        python rpsrunner.py 'bots/*.py'
+        python rpsrunner.py -m 100 'bots/*.py'
