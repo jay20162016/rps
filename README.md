@@ -1,3 +1,3 @@
-# rps
+# rps - Rock, Paper, Scissors
 
-This reposity contains all our (not for fun) scripts from rpscontest.com.
+This reposity contains all our scripts from rpscontest.com.
