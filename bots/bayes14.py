@@ -1,6 +1,3 @@
-# Bayes14 + Sore Loser Mod
-# This mod turns into random when the % of losses exceeds 65%
-
 # See http://overview.cc/RockPaperScissors for more information about rock, paper, scissors
 # Extension to bayes13: Use also the csc function for singleopp and singlemy
 
@@ -9,12 +6,6 @@ import operator
 import random
 
 if input == "":
-# sore loser mod
-  wins = 0
-  ties = 0
-  loses = 0
-  prev = ""
-# bayes14
   score = {'RR': 0, 'PP': 0, 'SS': 0, 'PR': 1, 'RS': 1, 'SP': 1,'RP': -1, 'SR': -1, 'PS': -1,}
   cscore = {'RR': 'r', 'PP': 'r', 'SS': 'r', 'PR': 'b', 'RS': 'b', 'SP': 'b','RP': 'c', 'SR': 'c', 'PS': 'c',}
   beat = {'P': 'S', 'S': 'R', 'R': 'P'}
@@ -394,13 +385,3 @@ else:
                      singlemy_my2_answers[cscore[hand+singlemy_my2]]
 
   output = counter_prob(probs)
-#sore loser mod
-if prev == input:
-  ties += 1
-elif prev == beat[input]:
-  wins += 1
-else:
-  loses += 1
-if loses / (wins + loses + ties) > 0.65:
-  output = random.choice(["R","P","S"])
-prev = output
