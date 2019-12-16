@@ -21,4 +21,4 @@ jobs:
         python-version: 3.7
 
     - name: Run bots
-      run: python rpsrunner.py -m 100 -t 16 'bots/*.py'
+      run: python rpsrunner.py -m 100 -t 8 'bots/*.py'
